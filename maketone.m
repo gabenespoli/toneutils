@@ -82,20 +82,22 @@ writeaudiofile=0;
 %% user-defined
 if nargin>1
     for i=1:2:length(varargin)
-        switch varargin{i}
-            case 'freqs',       f0=varargin{i+1};
-            case 'vols',        vols=varargin{i+1};
-            case 'Fs',          Fs=varargin{i+1};
-            case 'duration',    duration=varargin{i+1};
-            case 'volume',      volume=varargin{i+1};
-            case 'wintype',     wintype=varargin{i+1};
-            case 'onramp',      onRamp=varargin{i+1};
-            case 'offramp',     offRamp=varargin{i+1};
-            case 'inverted',    inverted=varargin{i+1};
-            case 'dualmono',    dualmono=varargin{i+1};
-            case {'wavfile','wavefile'},    writeaudiofile=varargin{i+1};
-            case 'bits',        nBits=varargin{i+1};
-            case 'filename',    sFilename=varargin{i+1};
+        if ~isempty(varargin{i+1});
+            switch lower(varargin{i})
+                case 'freqs',       freqs=varargin{i+1};
+                case 'vols',        vols=varargin{i+1};
+                case 'fs',          Fs=varargin{i+1};
+                case 'duration',    duration=varargin{i+1};
+                case 'volume',      volume=varargin{i+1};
+                case 'wintype',     wintype=varargin{i+1};
+                case 'onramp',      onRamp=varargin{i+1};
+                case 'offramp',     offRamp=varargin{i+1};
+                case 'inverted',    inverted=varargin{i+1};
+                case 'dualmono',    dualmono=varargin{i+1};
+                case {'wavfile','wavefile'},    writeaudiofile=varargin{i+1};
+                case 'bits',        nBits=varargin{i+1};
+                case 'filename',    sFilename=varargin{i+1};
+            end
         end
     end
 end
@@ -139,10 +141,11 @@ end
 if inverted, tone=-tone; end
 if dualmono, tone=[tone'; tone']; end
 
+%% save audio file to disk
 if writeaudiofile
     if isempty(sFilename) % create filename
         sFilename='tone';
-        if sFreq,       sFilename=[sFilename,'_',num2str(f0),'Hz']; end
+        if sFreq,       sFilename=[sFilename,'_',num2str(freqs(1)),'Hz']; end
         if sDuration,   sFilename=[sFilename,'_',num2str(duration*1000),'ms']; end
         if sVolume,     sFilename=[sFilename,'_',num2str(volume*10),'vol']; end
         if sFs,         sFilename=[sFilename,'_',num2str(Fs),'Fs']; end
