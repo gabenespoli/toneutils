@@ -8,16 +8,10 @@
 %       '.' indicates a rest, and '-' indicates a note held from the
 %       previous note.
 %
-%   'notation' = [cell] number of elements in the cell is the number of 
-%       "beats". These beats will go by according to the tempo, tempoUnit,
-%       and beatLevel. If an item in the cell is a number it will play a tone 
-%       of that frequency in Hz, if it is the string '%' it will continue 
-%       the previous tone (not start a new tone onset), if it is a note 
-%       string (e.g., 'a4', 'bb3', 'c#5') it will use note2freq to convert
-%       the note name into the corresponding frequency.
-%       Default {220 '%' 0 220 '%' 0 220 0}.
-%
-%   'beatLevel' = [numeric] The number of cell array positions in 'notation'
+%   'toneconfig' = [cell|cell of cells] A cell array of key/value pairs
+%       that will be used when calling maketone.m.
+%       '
+%   'beatLevel' = [numeric] The number of characters in 'rhythm'
 %       that are contained in one beat. Default 2 (each cell array position
 %       is one eighth note).
 %
@@ -30,12 +24,10 @@
 %       the output. This basically uses repmat() on the finished sequence.
 %       Default 4.
 %
-%   'save' = [string] File path and name to save as a wav file.
+%   'filename' = [string] File path and name to save as a wav file.
 %       Default '' (empty, don't save).
 %
-%   'tones' = [cell|cell of cells] A cell array of key/value pairs that
-%       will be used when calling maketone.m. Available parameters are 
-%       '
+%   'Fs' = [numeric] Sampling frequency in Hz. Default 20000.
 %
 % output:
 %   sequence = [numeric] A 1-by-n or 2-by-n matrix.
@@ -49,68 +41,67 @@
 function [sequence,Fs] = makesequence(varargin)
 
 %% defaults
-rhythm = 'x-x.x.x.';
-volume = 0.9; 
+rhythm = 'x.x.x.x.';
 beatLevel = 2;
-tempo = 500;
+tempo = 250;
 tempoUnit = 'ms';
 reps = 4;
-savefile = '';
-tone = {'freq',[220 440]};
+filename = '';
+toneconfig = {...
+    'freqs',220,...
+    'volume',0.9,...
+    'onramp',0/1000,...
+    'offramp',0/1000,...
+    };
+Fs = 20000; % sampling freq in Hz
 
 %% user-defined
 if nargin > 0
     for i = 1:2:length(varargin)
-        switch varargin{i}
+        switch lower(varargin{i})
             case 'rhythm'
                 rhythm = varargin{i+1};
-            case 'beatLevel'
+            case 'beatlevel'
                 beatLevel = varargin{i+1};
             case 'tempo'
                 tempo = varargin{i+1};
-            case 'tempUnit'
+            case 'tempounit'
                 tempoUnit = varargin{i+1};
             case 'reps'
-                rep = varargin{i+1};
-            case 'savefile'
-                savefile = varargin{i+1};
+                reps = varargin{i+1};
+            case 'filename'
+                filename = varargin{i+1};
+            case 'toneconfig'
+                toneconfig = varargin{i+1};
+            case 'fs'
+                Fs = varargin{i+1};
         end
     end
 end
 
-%% check and adjust variables
-if length(notation) ~= length(volume)
-    error('notation and volume must be the same length')
-end
-
-if ~strcmpi(tempoUnit,'ms')
-    tempo = rate(tempo,tempoUnit,'ms');
-    tempoUnit = 'ms';
-end
-
-tempo = tempo / beatLevel; % adjust tempo for beat level
-
-
-
 %% make sequence
 
-% freq          =   frequency of each sine tone in Hz
-% ioi           =   inter-onset-interval of beeps in seconds
-% numBeats      =   number of beeps in the file
-% toneDuration  =   length of each sine tone beep in seconds
-% Fs            =   sampling rate
+tempo = tempo / beatLevel; % adjust tempo for beat level
+ioi = round(rate(tempo, tempoUnit, 's') * Fs); % convert tempo to ioi in samples
 
-ioi=ioi*Fs; % convert ioi to samples
-toneVolume=0.9; % set volume
-t=0:1/Fs:(toneDuration-1/Fs); % create time vector for tone
-tone=toneVolume*sin(2*pi*freq*t); % create tone
-metronome=zeros(numBeats*ioi,1); % create container for metronome
+sequence = zeros(1, length(rhythm) * ioi); % create container for sequence
 
 % loop through beats and put them in the metronome container
-for i=1:numBeats
-    beatLoc=i+(ioi*(i-1));
-    metronome(beatLoc:beatLoc+length(tone)-1)=tone;
+for i = 1:length(rhythm)
+    switch(rhythm(i))
+        case 'x'
+            tone = maketone(toneconfig{:},'Fs',Fs,'duration',ioi / Fs)';
+            ind = i + (ioi * (i - 1));
+            sequence(ind:ind + length(tone) - 1) = tone;
+
+        case '.'
+
+        case '-', error('This functionality doesn''t work yet.')
+        otherwise, error('Unknown character in rhythm string.')
+    end
 end
+
+sequence = repmat(sequence,1,reps);
 
 % write audio file to disk
 if ~isempty(filename)
