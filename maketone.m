@@ -59,7 +59,7 @@ if mod(nargin,2)==1, freqs=varargin{1};
 else freqs=440; % default freq
 end
 
-% defaults
+%% defaults
 vols=[]; % volume of harmonics (between 0 and 1)
 Fs=20000; % in Hz
 duration=1; % in seconds
@@ -79,7 +79,7 @@ writeaudiofile=0;
     sVolume=1;
     sFs=1;
     
-% user-defined
+%% user-defined
 if nargin>1
     for i=1:2:length(varargin)
         switch varargin{i}
@@ -100,9 +100,10 @@ if nargin>1
     end
 end
 
+%% check args
 if isempty(vols), vols=ones(size(freqs)); end
 
-% make tone
+%% make tone
 t=0:1/Fs:(duration-1/Fs);
 tone=0;
 for i=1:length(freqs)
