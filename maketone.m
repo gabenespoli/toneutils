@@ -26,7 +26,7 @@
 %       (default), 'linear', or 'none'.
 %
 %   'onramp' = [numeric] Use in combination with 'linear' WINTYPE to specify
-%       the length of tone onset. Default 10% of duration. In seconds.
+%       the length of tone onset. In seconds. Default 0.
 %
 %   'offramp' = [numeric] Same as 'onramp' but for tone offset. Default is
 %       the value of 'onramp'.
@@ -65,7 +65,7 @@ Fs=20000; % in Hz
 duration=1; % in seconds
 volume=0.9; % proportion between 0 and 1
 wintype='hanning'; % 'hanning', 'linear', 'none'
-onRamp=duration * 0.1; % in seconds
+onRamp=0; % in seconds
 offRamp=onRamp;
 
 inverted=0;
