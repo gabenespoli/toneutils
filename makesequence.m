@@ -1,10 +1,13 @@
-function [sequence,Fs] = makesequence(varargin)
 %MAKESEQUENCE  Make a tone sequence.
 % 
 % usage:
 %   sequence = makesequence('key1',val1,etc.)
 %
 % input:
+%   'rhythm' = [string] A rhythm string. 'x' indicates a note onset,
+%       '.' indicates a rest, and '-' indicates a note held from the
+%       previous note.
+%
 %   'notation' = [cell] number of elements in the cell is the number of 
 %       "beats". These beats will go by according to the tempo, tempoUnit,
 %       and beatLevel. If an item in the cell is a number it will play a tone 
@@ -13,13 +16,6 @@ function [sequence,Fs] = makesequence(varargin)
 %       string (e.g., 'a4', 'bb3', 'c#5') it will use note2freq to convert
 %       the note name into the corresponding frequency.
 %       Default {220 '%' 0 220 '%' 0 220 0}.
-%
-%   'volume' = [cell] Volume levels of each beat in 'notation'. Must be the 
-%       same length as 'notation'. Beats which have a note "tied" over (i.e.,
-%       they have a '%' in 'notation') will have their volume levels ignored
-%       in favour of the volume of the note which has been tied over. 
-%       Volume levels should be between 0 and 1. Note that volume levels
-%       of 1 will probably cause distortions. Default 0.9 for all beats.
 %
 %   'beatLevel' = [numeric] The number of cell array positions in 'notation'
 %       that are contained in one beat. Default 2 (each cell array position
@@ -30,16 +26,16 @@ function [sequence,Fs] = makesequence(varargin)
 %
 %   'tempoUnit' = ['hz'|'bpm'|'ms'|'s'] The units of tempo. Default 'ms'.
 %
-%   'reps' = [numeric] Number of repetitions of 'notation' to include in
+%   'reps' = [numeric] Number of repetitions of the rhythm to include in
 %       the output. This basically uses repmat() on the finished sequence.
 %       Default 4.
 %
 %   'save' = [string] File path and name to save as a wav file.
 %       Default '' (empty, don't save).
 %
-%   'tones' = [cell of cells] A cell array the same size as 'notation',
-%       where each position with a note onset is a cell array with 
-%       key/value pairs for the function call to maketone.m.
+%   'tones' = [cell|cell of cells] A cell array of key/value pairs that
+%       will be used when calling maketone.m. Available parameters are 
+%       '
 %
 % output:
 %   sequence = [numeric] A 1-by-n or 2-by-n matrix.
@@ -50,14 +46,17 @@ function [sequence,Fs] = makesequence(varargin)
 %
 % Written by Gabriel A. Nespoli (gabenespoli@gmail.com) and Sean Gilmore.
 
+function [sequence,Fs] = makesequence(varargin)
+
 %% defaults
-notation = {220 '%' 0 220 '%' 0 220 0};
-volume =   {0.9 '%' 0 0.7 '%' 0 0.7 0};
+rhythm = 'x-x.x.x.';
+volume = 0.9; 
 beatLevel = 2;
 tempo = 500;
 tempoUnit = 'ms';
 reps = 4;
 savefile = '';
+tone = {'freq',[220 440]};
 
 %% user-defined
 
