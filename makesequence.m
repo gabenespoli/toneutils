@@ -10,10 +10,6 @@
 %
 %   'toneconfig' = [cell|cell of cells] A cell array of key/value pairs
 %       that will be used when calling maketone.m.
-%       '
-%   'beatLevel' = [numeric] The number of characters in 'rhythm'
-%       that are contained in one beat. Default 2 (each cell array position
-%       is one eighth note).
 %
 %   'tempo' = [numeric] The rate of beats or the length of one beat,
 %       depending on tempoUnit. Default 500 ms.
@@ -42,7 +38,6 @@ function [sequence,Fs] = makesequence(varargin)
 
 %% defaults
 rhythm = 'x.x.x.x.';
-beatLevel = 2;
 tempo = 250;
 tempoUnit = 'ms';
 reps = 4;
@@ -59,29 +54,19 @@ Fs = 20000; % sampling freq in Hz
 if nargin > 0
     for i = 1:2:length(varargin)
         switch lower(varargin{i})
-            case 'rhythm'
-                rhythm = varargin{i+1};
-            case 'beatlevel'
-                beatLevel = varargin{i+1};
-            case 'tempo'
-                tempo = varargin{i+1};
-            case 'tempounit'
-                tempoUnit = varargin{i+1};
-            case 'reps'
-                reps = varargin{i+1};
-            case 'filename'
-                filename = varargin{i+1};
-            case 'toneconfig'
-                toneconfig = varargin{i+1};
-            case 'fs'
-                Fs = varargin{i+1};
+            case 'rhythm',      rhythm = varargin{i+1};
+            case 'tempo',       tempo = varargin{i+1};
+            case 'tempounit',   tempoUnit = varargin{i+1};
+            case 'reps',        reps = varargin{i+1};
+            case 'filename',    filename = varargin{i+1};
+            case 'toneconfig',  toneconfig = varargin{i+1};
+            case 'fs',          Fs = varargin{i+1};
         end
     end
 end
 
 %% make sequence
 
-tempo = tempo / beatLevel; % adjust tempo for beat level
 ioi = round(rate(tempo, tempoUnit, 's') * Fs); % convert tempo to ioi in samples
 
 sequence = zeros(1, length(rhythm) * ioi); % create container for sequence
