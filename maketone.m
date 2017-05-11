@@ -1,56 +1,58 @@
-function tone=maketone(varargin)
 %MAKETONE  Creates a simple pure tone or a complex tone.
 %
-%   TONE=MAKETONE returns a tone made with default parameters.
+% usage:
+%   tone = maketone
+%   tone = maketone(freqs)
+%   tone = maketone(freqs,'key1',val1,...)
+%   tone = maketone('key1',val1,...)
 %
-%   TONE=MAKETONE(FREQS) returns a tone made with the specified
-%   frequencies.
+% input:
+%   'freqs' = [numeric] Frequencies to include in tone. Default 440 Hz.
+%       If multiple frequencies are entered, pure tones are added together.
 %
-%   TONE=MAKETONE(FREQS,'Parameter1',Value1,...) OR
-%   TONE=MAKETONE('Parameter1',Value1,...) specifies any of the
-%   following parameters:
+%   'vols' = [numeric] Relative volume of each frequency as a proportion
+%       between 0 and 1. Must be a vector the same size as 'freqs'. Default
+%       is a vector of 1's the same length as 'freqs'.
 %
-%       'freqs'     =   Frequencies to include in tone. Default 440 Hz.
-%                       If multiple frequencies are entered, pure tones are
-%                       added together.
+%   'Fs' = [numeric in Hz] Sampling frequency. Default 20000 Hz.
 %
-%       'vols'      =   Relative volume of each frequency as a proportion
-%                       between 0 and 1. Must be a vector the same size as
-%                       'freqs'. Default is a vector of 1's the same length
-%                       as 'freqs'.
+%   'duration' = [numeric in seconds] Length of the tone. Default 1 second.
 %
-%       'Fs'        =   Sampling frequency. Default 20000 Hz.
+%   'volume' = [numeric between 0 and 1] Total volume of the tone as a 
+%       proportion between 0 and 1. Default 0.9 (entering 1 may cause 
+%       distortion. Can also be a vector the same length as 'freqs'.
 %
-%       'duration'  =   Length of the tone. Default 1 second.
+%   'wintype' = [string] Type of volume envelope to apply. Enter 'hanning'
+%       (default), 'linear', or 'none'.
 %
-%       'volume'    =   Total volume of the tone as a proportion between 0
-%                       and 1. Default 0.9 (entering 1 may cause distortion
-%                       products to appear.
+%   'onramp' = [numeric] Use in combination with 'linear' WINTYPE to specify
+%       the length of tone onset. Default 0.1 seconds.
 %
-%       'wintype'   =   Type of volume envelope to apply. Enter 'hanning'
-%                       (default), 'linear', or 'none'.
+%   'offramp' = [numeric] Same as 'onramp' but for tone offset. Default is
+%       the value of 'onramp'.
 %
-%       'onramp'    =   Use in combination with 'linear' WINTYPE to specify
-%                       the length of tone onset. Default 0.1 seconds.
+%   'inverted' = [boolean] Enter 1 to make an inverted version of the tone
+%       (i.e. multiply by -1). Default 0 (non-inverted).
 %
-%       'offramp'   =   Same as 'onramp' but for tone offset. Default is
-%                       the value of 'onramp'.
+%   'dualmono' = [boolean] Enter 1 to create two channels of the same tone
+%       instead of one. Useful when creating stereo wav files. 
+%       Default 0 (mono).
 %
-%       'inverted'  =   Enter 1 to make an inverted version of the tone
-%                       (i.e. multiply by -1). Default 0 (non-inverted).
+%   'wavfile' = [boolean] Enter 1 to save tone as a .wav file. Default 0.
 %
-%       'dualmono'  =   Enter 1 to create two channels of the same tone
-%                       instead of one. Useful when creating stereo wav
-%                       files. Default 0 (mono).
-%
-%       'wavfile'   =   Enter 1 to save tone as a .wav file. Default 0.
-%
-%       'filename'  =   Filename of the outputted .wav file. Default is
-%                       of the form: tone-440Hz-1000ms-9vol-20000Fs-inv.wav
+%   'filename' = [string] Filename of the outputted .wav file. Default is
+%       of the form: tone-440Hz-1000ms-9vol-20000Fs-inv.wav
 %                       
-%       'bits'      =   Bit rate of .wav file. Default 16.
+%   'bits' = [numeric] Bit rate of .wav file. Default 16.
 %
-% Written by Gabe Nespoli 2012-12-14. Revised 2014-03-19.
+% output:
+%   tone = [numeric] A 1-by-n or 2-by-n vector of the tone.
+%
+%   <filename> = [.wav file] An audio file of the tone.
+%
+% Written by Gabriel A. Nespoli (gabenespoli@gmail.com).
+
+function tone = maketone(varargin)
 
 if mod(nargin,2)==1, freqs=varargin{1}; 
     if nargin>2, varargin=varargin(2:end); end
