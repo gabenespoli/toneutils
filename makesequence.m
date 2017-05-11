@@ -59,23 +59,21 @@ savefile = '';
 tone = {'freq',[220 440]};
 
 %% user-defined
-
-% loop through every second element of varargin
-if nargin > 1 
+if nargin > 0
     for i = 1:2:length(varargin)
-        switch varargin
+        switch varargin{i}
             case 'rhythm'
-                rhythm = {i+1};
+                rhythm = varargin{i+1};
             case 'beatLevel'
-                beatLevel = {i+1};
+                beatLevel = varargin{i+1};
             case 'tempo'
-                tempo = {i+1};
+                tempo = varargin{i+1};
             case 'tempUnit'
-                tempoUnit = {i+1};
+                tempoUnit = varargin{i+1};
             case 'reps'
-                rep = {i+1};
+                rep = varargin{i+1};
             case 'savefile'
-                savefile = {i+1};
+                savefile = varargin{i+1};
         end
     end
 end
