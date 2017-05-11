@@ -51,8 +51,9 @@ function [sequence,Fs] = makesequence(varargin)
 % Written by Gabriel A. Nespoli (gabenespoli@gmail.com) and Sean Gilmore.
 
 %% defaults
-notation = {220 '%' 0 220 '%' 0 220 0};
-volume =   {0.9 '%' 0 0.7 '%' 0 0.7 0};
+%notation = {220 '%' 0 220 '%' 0 220 0};
+rhythm = {'x . x . x .'};
+%volume =   {0.9 '%' 0 0.7 '%' 0 0.7 0};
 beatLevel = 2;
 tempo = 500;
 tempoUnit = 'ms';
@@ -62,10 +63,24 @@ savefile = '';
 %% user-defined
 
 % loop through every second element of varargin
-
-% switch/case on that element
-
-% if there's a match to a variable name, overwrite that var with the value of the next element
+if nargin > 1 
+    for i = 1:2:length(varargin)
+        switch varargin
+            case 'rhythm'
+                rhythm = {i+1};
+            case 'beatLevel'
+                beatLevel = {i+1};
+            case 'tempo'
+                tempo = {i+1};
+            case 'tempUnit'
+                tempoUnit = {i+1};
+            case 'reps'
+                rep = {i+1};
+            case 'savefile'
+                savefile = {i+1};
+        end
+    end
+end
 
 %% check and adjust variables
 if length(notation) ~= length(volume)
