@@ -1,4 +1,4 @@
-function sequence = makesequence(varargin)
+function [sequence,Fs] = makesequence(varargin)
 %MAKESEQUENCE  Make a tone sequence.
 % 
 % usage:
@@ -37,12 +37,18 @@ function sequence = makesequence(varargin)
 %   'save' = [string] File path and name to save as a wav file.
 %       Default '' (empty, don't save).
 %
+%   'tones' = [cell of cells] A cell array the same size as 'notation',
+%       where each position with a note onset is a cell array with 
+%       key/value pairs for the function call to maketone.m.
+%
 % output:
-%   sequence = [numeric|cell] A 1-by-n or 2-by-n matrix. If 
+%   sequence = [numeric] A 1-by-n or 2-by-n matrix.
+%
+%   Fs = [numeric] The sampling frequency of the sequence in Hz.
 %
 %   <filename> = A .wav file with the tone sequence.
 %
-
+% Written by Gabriel A. Nespoli (gabenespoli@gmail.com) and Sean Gilmore.
 
 %% defaults
 notation = {220 '%' 0 220 '%' 0 220 0};
@@ -61,7 +67,7 @@ savefile = '';
 
 % if there's a match to a variable name, overwrite that var with the value of the next element
 
-%% check input and adjust variables
+%% check and adjust variables
 if length(notation) ~= length(volume)
     error('notation and volume must be the same length')
 end
@@ -75,11 +81,7 @@ tempo = tempo / beatLevel; % adjust tempo for beat level
 
 
 
-
-
-
-
-function makeSineMetronome(filename,freq,ioi,numBeats,toneDuration,Fs)
+%% make sequence
 
 % freq          =   frequency of each sine tone in Hz
 % ioi           =   inter-onset-interval of beeps in seconds
@@ -87,22 +89,11 @@ function makeSineMetronome(filename,freq,ioi,numBeats,toneDuration,Fs)
 % toneDuration  =   length of each sine tone beep in seconds
 % Fs            =   sampling rate
 
-if toneDuration>=ioi,warning('tone duration is longer than ioi'),end
-
-% convert ioi to samples
-ioi=ioi*Fs;
-
-% set volume
-toneVolume=0.9;
-
-% create time vector for tone
-t=0:1/Fs:(toneDuration-1/Fs);
-
-% create tone
-tone=toneVolume*sin(2*pi*freq*t);
-
-% create container for metronome
-metronome=zeros(numBeats*ioi,1);
+ioi=ioi*Fs; % convert ioi to samples
+toneVolume=0.9; % set volume
+t=0:1/Fs:(toneDuration-1/Fs); % create time vector for tone
+tone=toneVolume*sin(2*pi*freq*t); % create tone
+metronome=zeros(numBeats*ioi,1); % create container for metronome
 
 % loop through beats and put them in the metronome container
 for i=1:numBeats
@@ -111,4 +102,6 @@ for i=1:numBeats
 end
 
 % write audio file to disk
-audiowrite(filename,metronome,Fs)
+if ~isempty(filename)
+    audiowrite(filename,sequence,Fs)
+end
