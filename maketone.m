@@ -22,8 +22,8 @@
 %       proportion between 0 and 1. Default 0.9 (entering 1 may cause 
 %       distortion. Can also be a vector the same length as 'freqs'.
 %
-%   'wintype' = [string] Type of volume envelope to apply. Enter 'hanning'
-%       (default), 'linear', or 'none'.
+%   'wintype' = [string] Type of volume envelope to apply. Enter 'linear'
+%       (default), 'hanning', or 'none'.
 %
 %   'onramp' = [numeric] Use in combination with 'linear' WINTYPE to specify
 %       the length of tone onset. In seconds. Default 0.
@@ -64,7 +64,7 @@ vols=[]; % volume of harmonics (between 0 and 1)
 Fs=20000; % in Hz
 duration=1; % in seconds
 volume=0.9; % proportion between 0 and 1
-wintype='hanning'; % 'hanning', 'linear', 'none'
+wintype='linear'; % 'hanning', 'linear', 'none'
 onRamp=0; % in seconds
 offRamp=onRamp;
 
