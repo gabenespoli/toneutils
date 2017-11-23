@@ -56,7 +56,8 @@ function tone = maketone(varargin)
 
 if mod(nargin,2)==1, freqs=varargin{1}; 
     if nargin>2, varargin=varargin(2:end); end
-else freqs=440; % default freq
+else
+    freqs=440; % default freq
 end
 
 %% defaults
@@ -82,7 +83,7 @@ writeaudiofile=0;
 %% user-defined
 if nargin>1
     for i=1:2:length(varargin)
-        if ~isempty(varargin{i+1});
+        if ~isempty(varargin{i+1})
             switch lower(varargin{i})
                 case 'freqs',       freqs=varargin{i+1};
                 case 'vols',        vols=varargin{i+1};
@@ -115,7 +116,8 @@ end
 % normalize to between 0 and 1, and adjust volume
 if abs(max(tone))>=abs(min(tone))
     tone=tone/abs(max(tone));
-else tone=tone/abs(min(tone));
+else
+    tone=tone/abs(min(tone));
 end
 tone=tone*volume;
 

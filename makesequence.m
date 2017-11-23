@@ -78,8 +78,12 @@ for i = 1:length(rhythm)
 
         case '.'
 
-        case '-', error('This functionality doesn''t work yet.')
-        otherwise, error('Unknown character in rhythm string.')
+        case '-'
+            error('This functionality doesn''t work yet.')
+
+        otherwise
+            error('Unknown character in rhythm string.')
+
     end
 end
 
