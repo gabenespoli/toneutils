@@ -66,13 +66,18 @@ end
 
 ioi = round(rate(tempo, tempoUnit, 's') * Fs); % convert tempo to ioi in samples
 
+% make sure duration isn't longer than ioi
+if duration * Fs > ioi
+    error('Tone duration cannot be longer than the inter-onset interval.')
+end
+
 sequence = zeros(1, length(rhythm) * ioi); % create container for sequence
 
 % loop through beats and put them in the metronome container
 for i = 1:length(rhythm)
     switch(rhythm(i))
         case 'x'
-            tone = maketone(toneconfig{:},'Fs',Fs,'duration',ioi / Fs)';
+            tone = maketone(toneconfig{:},'Fs',Fs)';
             ind = i + (ioi * (i - 1));
             sequence(ind:ind + length(tone) - 1) = tone;
 
