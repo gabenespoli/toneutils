@@ -119,7 +119,7 @@ if abs(max(tone))>=abs(min(tone))
 else
     tone=tone/abs(min(tone));
 end
-tone=tone*volume;
+tone=tone*abs(volume);
 
 % make first dimension time
 tone=shiftdim(tone);
